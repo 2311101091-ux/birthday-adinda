@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Adinda Anastasya Halim</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    height: 100vh;
+    background:
+        radial-gradient(circle at 50% 40%, #38204f 0%, #180d2c 45%, #070411 100%);
+    font-family: Georgia, serif;
+}
+
+/* CANVAS */
+canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* TEKS */
+.message {
+    position: absolute;
+    z-index: 10;
+    width: 100%;
+    top: 13%;
+    text-align: center;
+    color: white;
+    opacity: 0;
+    animation: showText 3s ease 4s forwards;
+}
+
+.small {
+    font-family: Arial, sans-serif;
+    font-size: 15px;
+    letter-spacing: 6px;
+    text-transform: uppercase;
+    opacity: .8;
+}
+
+h1 {
+    margin-top: 15px;
+    font-size: clamp(38px, 7vw, 90px);
+    line-height: 1.05;
+
+    background: linear-gradient(
+        90deg,
+        #fff,
+        #ffd6f6,
+        #f7a9dc,
+        #fff
+    );
+
+    background-size: 300%;
+    -webkit-background-clip: text;
+    color: transparent;
+
+    animation: shine 5s linear infinite;
+    
+    text-shadow:
+        0 0 20px rgba(255,180,230,.45),
+        0 0 50px rgba(255,100,200,.25);
+}
+
+.subtitle {
+    margin-top: 20px;
+    font-family: Arial, sans-serif;
+    font-size: clamp(15px, 2vw, 23px);
+    letter-spacing: 3px;
+    opacity: .85;
+}
+
+@keyframes showText {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes shine {
+    0% { background-position: 0%; }
+    100% { background-position: 300%; }
+}
+
+/* BINTANG */
+.star {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: white;
+    border-radius: 50%;
+    box-shadow: 0 0 10px white;
+    animation: twinkle 2s infinite alternate;
+}
+
+@keyframes twinkle {
+    from {
+        opacity: .2;
+        transform: scale(.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.5);
+    }
+}
+
+/* TOMBOL */
+.button {
+    position: absolute;
+    z-index: 20;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+
+    padding: 14px 28px;
+
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: 50px;
+
+    background: rgba(255,255,255,.08);
+    backdrop-filter: blur(10px);
+
+    color: white;
+    font-size: 15px;
+    cursor: pointer;
+
+    transition: .3s;
+}
+
+.button:hover {
+    background: rgba(255,255,255,.18);
+    transform: translateX(-50%) scale(1.05);
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="flowerCanvas"></canvas>
+
+<div class="message">
+    <div class="small">A Special Day For You</div>
+
+    <h1>
+        Happy Birthday<br>
+        Adinda Anastasya Halim
+    </h1>
+
+    <div class="subtitle">
+        Semoga hari ini seindah bunga yang bermekaran 🌸
+    </div>
+</div>
+
+<button class="button" onclick="startFlowers()">
+    ✨ Mekarkan Bunganya
+</button>
+
+
+<script>
+
+const canvas = document.getElementById("flowerCanvas");
+const ctx = canvas.getContext("2d");
+
+let W, H;
+let flowers = [];
+let particles = [];
+
+function resize() {
+    W = canvas.width = window.innerWidth * devicePixelRatio;
+    H = canvas.height = window.innerHeight * devicePixelRatio;
+
+    ctx.setTransform(
+        devicePixelRatio,
+        0,
+        0,
+        devicePixelRatio,
+        0,
+        0
+    );
+
+    W = window.innerWidth;
+    H = window.innerHeight;
+}
+
+resize();
+window.addEventListener("resize", resize);
+
+
+/* =========================
+   BINTANG
+========================= */
+
+for (let i = 0; i < 100; i++) {
+
+    const star = document.createElement("div");
+
+    star.className = "star";
+
+    star.style.left =
+        Math.random() * 100 + "%";
+
+    star.style.top =
+        Math.random() * 100 + "%";
+
+    star.style.animationDelay =
+        Math.random() * 3 + "s";
+
+    document.body.appendChild(star);
+}
+
+
+/* =========================
+   FLOWER CLASS
+========================= */
+
+class Flower {
+
+    constructor(x, y, size, delay) {
+
+        this.x = x;
+        this.y = y;
+
+        this.size = size;
+
+        this.delay = delay;
+
+        this.progress = 0;
+
+        this.rotation =
+            Math.random() * Math.PI * 2;
+
+        this.petals =
+            7 + Math.floor(Math.random() * 3);
+
+        this.color =
+            Math.random() > .5
+            ? "#ff9fd8"
+            : "#ffc6ea";
+
+        this.active = false;
+    }
+
+    draw(time) {
+
+        if (time < this.delay) return;
+
+        this.active = true;
+
+        if (this.progress < 1) {
+            this.progress += 0.012;
+        }
+
+        const p =
+            this.progress;
+
+        ctx.save();
+
+        ctx.translate(
+            this.x,
+            this.y
+        );
+
+        ctx.rotate(
+            this.rotation
+        );
+
+        /* BATANG */
+
+        ctx.beginPath();
+
+        ctx.moveTo(0, 5);
+
+        ctx.lineTo(
+            0,
+            this.size * 2.7
+        );
+
+        ctx.strokeStyle =
+            "#6fa56f";
+
+        ctx.lineWidth = 3;
+
+        ctx.stroke();
+
+
+        /* DAUN */
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            -this.size * .35,
+            this.size * 1.8,
+            this.size * .3,
+            this.size * .12,
+            -.5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            "#79b879";
+
+        ctx.fill();
+
+
+        ctx.beginPath();
+
+        ctx.ellipse(
+            this.size * .35,
+            this.size * 2.2,
+            this.size * .3,
+            this.size * .12,
+            .5,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+
+        /* BUNGA */
+
+        const radius =
+            this.size * p;
+
+        for (
+            let i = 0;
+            i < this.petals;
+            i++
+        ) {
+
+            const angle =
+                (Math.PI * 2 / this.petals) * i;
+
+            const px =
+                Math.cos(angle) * radius;
+
+            const py =
+                Math.sin(angle) * radius;
+
+            ctx.beginPath();
+
+            ctx.ellipse(
+                px,
+                py,
+                this.size * .65 * p,
+                this.size * .35 * p,
+                angle,
+                0,
+                Math.PI * 2
+            );
+
+            ctx.fillStyle =
+                this.color;
+
+            ctx.shadowBlur = 25;
+
+            ctx.shadowColor =
+                this.color;
+
+            ctx.fill();
+        }
+
+
+        /* PUTIK */
+
+        ctx.beginPath();
+
+        ctx.arc(
+            0,
+            0,
+            this.size * .32 * p,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            "#ffe89a";
+
+        ctx.shadowBlur = 15;
+
+        ctx.shadowColor =
+            "#ffd85a";
+
+        ctx.fill();
+
+        ctx.restore();
+
+
+        /* PARTIKEL */
+
+        if (
+            this.active &&
+            Math.random() < .04
+        ) {
+
+            particles.push(
+                new Particle(
+                    this.x +
+                    (Math.random() - .5)
+                    * this.size * 2,
+
+                    this.y +
+                    (Math.random() - .5)
+                    * this.size * 2
+                )
+            );
+        }
+    }
+}
+
+
+/* =========================
+   PARTICLE
+========================= */
+
+class Particle {
+
+    constructor(x, y) {
+
+        this.x = x;
+        this.y = y;
+
+        this.vx =
+            (Math.random() - .5) * .5;
+
+        this.vy =
+            -Math.random() * 1.5;
+
+        this.life = 1;
+
+        this.size =
+            Math.random() * 2 + 1;
+    }
+
+    update() {
+
+        this.x += this.vx;
+
+        this.y += this.vy;
+
+        this.life -= .012;
+    }
+
+    draw() {
+
+        ctx.beginPath();
+
+        ctx.arc(
+            this.x,
+            this.y,
+            this.size,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fillStyle =
+            `rgba(255,190,230,${this.life})`;
+
+        ctx.shadowBlur = 15;
+
+        ctx.shadowColor =
+            "#ff9ddd";
+
+        ctx.fill();
+    }
+}
+
+
+/* =========================
+   BUAT BUNGA
+========================= */
+
+function createFlowers() {
+
+    flowers = [];
+
+    const positions = [
+
+        [.12, .78],
+        [.22, .72],
+        [.32, .80],
+        [.43, .70],
+        [.53, .78],
+        [.63, .71],
+        [.74, .80],
+        [.84, .73],
+        [.92, .79],
+
+        [.18, .88],
+        [.37, .87],
+        [.57, .88],
+        [.78, .88]
+
+    ];
+
+    positions.forEach(
+        (pos, index) => {
+
+            flowers.push(
+
+                new Flower(
+                    W * pos[0],
+                    H * pos[1],
+                    18 +
+                    Math.random() * 20,
+
+                    index * 250
+                )
+
+            );
+        }
+    );
+}
+
+
+/* =========================
+   ANIMATION
+========================= */
+
+let startTime =
+    performance.now();
+
+function animate(now) {
+
+    ctx.clearRect(
+        0,
+        0,
+        W,
+        H
+    );
+
+    const elapsed =
+        now - startTime;
+
+    flowers.forEach(
+        flower =>
+            flower.draw(elapsed)
+    );
+
+    particles.forEach(
+        particle => {
+
+            particle.update();
+
+            particle.draw();
+
+        }
+    );
+
+    particles =
+        particles.filter(
+            p => p.life > 0
+        );
+
+    requestAnimationFrame(
+        animate
+    );
+}
+
+
+createFlowers();
+
+requestAnimationFrame(
+    animate
+);
+
+
+/* =========================
+   REPLAY
+========================= */
+
+function startFlowers() {
+
+    startTime =
+        performance.now();
+
+    flowers.forEach(
+        (flower, index) => {
+
+            flower.progress = 0;
+
+            flower.delay =
+                index * 250;
+        }
+    );
+
+    particles = [];
+}
+
+</script>
+
+</body>
+</html>
